@@ -57,4 +57,24 @@ defmodule ExAws.S3.UploadTest do
       end
     end
   end
+
+  test "request shouldn't raise anything" do
+   bypass = Bypass.open
+   config = Application.get_all_env(:ex_aws)
+     |> Keyword.put(:host, "localhost")
+     |> Keyword.put(:port, bypass.port)
+     |> Keyword.put(:scheme, "http://")
+
+   Bypass.expect_once bypass, fn conn ->
+     Plug.Conn.resp(conn, 400, ~s<{"errors": [{"code": 400, "message": "Bad Request"}]}>)
+   end
+
+   file = "test/lib/s3/upload_test.exs"
+   op = file
+     |> File.stream!([], 1024*1024)
+     |> ExAws.S3.upload("audo-tests", "test/file.txt", timeout: :infinity)
+
+   assert {:error, _msg} = ExAws.request(op, config)
+  end
+
 end

@@ -28,6 +28,7 @@ defmodule ExAws.S3.Mixfile do
       {:hackney, ">= 0.0.0", only: [:dev, :test]},
       {:sweet_xml, ">= 0.0.0", only: [:dev, :test]},
       {:bypass, "~> 0.7", only: :test},
+      {:poison, "~> 3.1", only: :test},
       ex_aws(),
     ]
   end

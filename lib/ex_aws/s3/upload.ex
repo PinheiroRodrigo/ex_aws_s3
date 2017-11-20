@@ -63,8 +63,8 @@ defmodule ExAws.S3.Upload do
   """
   @spec upload_chunk!({binary, pos_integer}, t, ExAws.Config.t) :: {pos_integer, binary}
   def upload_chunk!({chunk, i}, op, config) do
-    %{headers: headers} = ExAws.S3.upload_part(op.bucket, op.path, op.upload_id, i, chunk, op.opts)
-    |> ExAws.request!(config)
+    {msg, %{headers: headers}} = ExAws.S3.upload_part(op.bucket, op.path, op.upload_id, i, chunk, op.opts)
+    |> ExAws.request(config)
 
     {_, etag} = Enum.find(headers, fn {k, _v} ->
       String.downcase(k) == "etag"
