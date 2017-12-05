@@ -15,12 +15,12 @@ defmodule ExAws.S3.Download do
   @type t :: %__MODULE__{}
 
   def get_chunk(op, %{start_byte: start_byte, end_byte: end_byte}, config) do
-    %{body: body} =
-      op.bucket
-      |> ExAws.S3.get_object(op.path, [range: "bytes=#{start_byte}-#{end_byte}"])
-      |> ExAws.request!(config)
-
-    {start_byte, body}
+     op = op.bucket
+     |> ExAws.S3.get_object(op.path, [range: "bytes=#{start_byte}-#{end_byte}"])
+     case ExAws.request(op, config) do
+       {:ok, %{body: body}} -> {start_byte, body}
+       {:error, reason} -> {:error, reason}
+     end
   end
 
   def build_chunk_stream(op, config) do
